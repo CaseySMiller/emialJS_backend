@@ -14,7 +14,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.post('/api/sendmail', (req, res) => {
-  mailController()
+  const result = mailController(req.body.email);
+  if (result) {
+    res.json(result);
+  } else {
+    res.json(false);
+  }
 });
 
 

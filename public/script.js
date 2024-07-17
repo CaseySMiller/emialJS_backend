@@ -4,7 +4,7 @@ sumbitButton.addEventListener('click', (e) => {
   e.preventDefault();
   const inputField = document.getElementById('email');
   const inputValue = inputField.value;
-  console.log(inputValue);
+  inputField.value = '';
 
   fetch('/api/sendmail', {
     method: 'POST',
@@ -13,12 +13,12 @@ sumbitButton.addEventListener('click', (e) => {
     },
     body: JSON.stringify({ email: inputValue }),
   })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log('Success:', data);
+    .then(() => {
+      console.log('Email sent');
+      window.location.href = '/success.html';
     })
     .catch((error) => {
-      console.error('Error:', error);
+      console.error('Error: Something went wrong', error);
     });
 });
 

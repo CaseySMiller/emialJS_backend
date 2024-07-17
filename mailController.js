@@ -1,18 +1,45 @@
-const { Category} = require('./models');
+require("dotenv").config();
+const { Category } = require("./models");
+const axios = require('axios');
 
-const mailController = async () =>{
-  console.log('mailController.js');
-
-  //retrieve the categories data
+const mailController = async (email) => {
+  //retrieve and parse the category names
   const categories = await Category.findAll();
   let catNameArray = [];
   for (let i = 0; i < categories.length; i++) {
-    catNameArray.push(categories[i].category_name);
+    nameObj = { name: categories[i].category_name };
+    catNameArray.push(nameObj);
   }
-  console.log(catNameArray);
 
+  const mailParams = {
+    email: email,
+    categories: catNameArray,
+  };
+  const sent = await sendMail(mailParams);
+  if (sent) {
+    return sent;
+  } else {
+    return false;
+  }
+};
 
-  // retrieve the categories data and then use axios to send it to email.js
-}
+const sendMail = async (mailParams) => {
+  // console.log(mailParams);
+  const result = await axios.post('https://api.emailjs.com/api/v1.0/email/send', {
+    service_id: process.env.EJS_SID,
+    template_id: process.env.EJS_TID,
+    user_id: process.env.EJS_UID,
+    accessToken: process.env.EJS_SECRET,
+    template_params: mailParams,
+  });
+
+  if (result) {
+    return result;
+  } else {
+    return false;
+  }
+};
 
 module.exports = mailController;
+
+
